@@ -8,3 +8,4 @@ default:
   dbname: postgres
   schema: public
   temp_folder: ./tmp
+  target_projection: 3857
