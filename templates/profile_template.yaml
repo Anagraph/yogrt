@@ -1,0 +1,10 @@
+default:
+  name: dev
+  type: postgres
+  host: localhost
+  user: postgres
+  password: mypassword
+  port: 5432
+  dbname: postgres
+  schema: public
+  temp_folder: ./tmp
