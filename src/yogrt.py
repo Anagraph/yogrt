@@ -1,3 +1,6 @@
+import yaml
+
+
 def yogrt_init(profile_path="./profile.yaml", sources_path="./sources.yaml",
                profile_template="templates/profile_template.yaml",
                sources_template="templates/sources_template.yaml"):
@@ -16,3 +19,9 @@ def yogrt_init(profile_path="./profile.yaml", sources_path="./sources.yaml",
 
 def yogrt_run(profile, sources):
     pass
+
+def get_connection(profile):
+    stream = open(profile)
+    config = yaml.full_load(stream)
+
+    print(config)

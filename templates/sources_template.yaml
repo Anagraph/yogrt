@@ -1,9 +1,9 @@
 poi:
   type: point
-  download: www.osm.org/downloads/poi
+  download_url: www.osm.org/downloads/poi
   table_name: poi
 
 streets_qc:
   type: line
-  download: www.osm.org/downloads/streets-qc
+  download_url: www.osm.org/downloads/streets-qc
   table_name: streets_qc
