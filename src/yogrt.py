@@ -39,7 +39,8 @@ def yogrt_run(profile_path, sources_path):
                                   database=profile_def['default']['dbname'],
                                   user=profile_def['default']['user'],
                                   password=profile_def['default']['password'],
-                                  schema=profile_def['default']['schema'])
+                                  schema=profile_def['default']['schema'],
+                                  target_projection=profile_def['default']['target_projection'])
 
 
 def get_connection(profile):
