@@ -3,12 +3,13 @@ import subprocess
 
 
 class Source:
-    def __init__(self, geometry_type, table_name, download_url, is_zip=False):
+    def __init__(self, geometry_type, table_name, download_url, is_zip=False, unzip_filename=None):
         self.type = geometry_type
         self.table_name = table_name
         self.download_url = download_url
-        self.downloaded_path = None
         self.is_zip = is_zip
+        self.unzip_filename = unzip_filename
+        self.downloaded_path = None
 
     def __repr__(self):
         return f"Source(type={self.type}, table_name={self.table_name}, download_url={self.download_url})"
@@ -21,6 +22,7 @@ class Source:
         if self.is_zip:
             p = subprocess.Popen(["unzip", self.downloaded_path, "-d", destination_folder])
             p.wait()
+            self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
 
     def import_to_database(self, host, port, database, user, password, schema):
         cmd = f"""ogr2ogr -progress -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -nln {self.table_name} {self.downloaded_path} -overwrite"""

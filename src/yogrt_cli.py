@@ -43,7 +43,9 @@ def main(init, profile, sources):
         click.echo('Oops, the sources file is not a YAML file. Did you specify the right filepath?')
         return
 
+    click.echo("Running yogrt...")
     yogrt_run(profile, sources)
+    click.echo("Done.")
 
 
 if __name__ == '__main__':

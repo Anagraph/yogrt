@@ -1,0 +1,12 @@
+countries:
+  type: polygon
+  download_url: https://datahub.io/core/geo-countries/r/countries.geojson
+  table_name: countries
+  is_zip: false
+
+ldc:
+  type: polygon
+  download_url: https://www.oeb.ca/documents/opendata/open-data-electricity-map-20220131.zip
+  table_name: ldc
+  is_zip: true
+  unzip_filename: "Electric_220131.kmz"
