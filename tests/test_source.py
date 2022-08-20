@@ -21,3 +21,13 @@ def test_source_download_not_zip():
     assert os.path.exists("./test_tmp/countries.geojson")
     shutil.rmtree('./test_tmp')
     os.mkdir('./test_tmp')
+
+
+def test_source_import_to_db():
+    source = Source(geometry_type="polygon", table_name="ldc",
+                    download_url="https://datahub.io/core/geo-countries/r/countries.geojson")
+    source.download("./test_tmp")
+    # requires the postgres to be spun up with `docker-compose up -d`
+    source.import_to_database("localhost", "3434", "postgres", "postgres", "bidone", "public")
+    shutil.rmtree('./test_tmp')
+    os.mkdir('./test_tmp')

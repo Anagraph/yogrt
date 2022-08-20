@@ -23,6 +23,7 @@ class Source:
             p.wait()
 
     def import_to_database(self, host, port, database, user, password, schema):
-        subprocess.Popen(["ogr2ogr", "progress", "-f", '"PostgreSQL"',
-                          f"""PG:"host:'{host}' port:'{port}' dbname:'{database}' user:'{user}' password:'{password}' schema='{schema}'""",
-                          "-nln", self.table_name, self.downloaded_path, "-overwrite"])
+        cmd = f"""ogr2ogr -progress -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -nln {self.table_name} {self.downloaded_path} -overwrite"""
+        print(cmd)
+        p = subprocess.Popen(cmd, shell=True)
+        p.wait()
