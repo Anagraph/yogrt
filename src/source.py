@@ -25,7 +25,7 @@ class Source:
             self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
 
     def import_to_database(self, host, port, database, user, password, schema):
-        cmd = f"""ogr2ogr -progress -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -nln {self.table_name} {self.downloaded_path} -overwrite"""
+        cmd = f"""ogr2ogr -progress -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nln {self.table_name} {self.downloaded_path} -overwrite"""
         print(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
