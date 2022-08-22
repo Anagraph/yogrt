@@ -1,11 +1,12 @@
-poi:
-  type: point
-  download_url: www.osm.org/downloads/poi
-  table_name: poi
-  is_zip: true
+countries:
+  type: polygon
+  download_url: https://datahub.io/core/geo-countries/r/countries.geojson
+  table_name: countries
+  is_zip: false
 
-streets_qc:
-  type: line
-  download_url: www.osm.org/downloads/streets-qc
-  table_name: streets_qc
+ldc:
+  type: polygon
+  download_url: https://www.oeb.ca/documents/opendata/open-data-electricity-map-20220131.zip
+  table_name: ldc
   is_zip: true
+  unzip_filename: "Electric_220131.kmz"

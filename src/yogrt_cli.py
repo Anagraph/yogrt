@@ -9,10 +9,11 @@ from yogrt import yogrt_run, yogrt_init
               help="Initialize a new profile and sources file.")
 @click.option('--profile', default=None, help='The path to the profile yogrt profile.')
 @click.option('--sources', default=None, help='The path to the sources file.')
-def main(init, profile, sources):
+@click.option('--secrets', default=None, help='The path to the secrets file.')
+def main(init, profile, sources, secrets):
     """Welcome to yogrt!
     After configuring your YAML profile and source file, you can download and import your sources with:
-    yogrt run --profile profile.yaml --sources sources.yaml"""
+    yogrt run --profile profile.yaml --sources sources.yaml --secrets secrets.yaml"""
 
     if init:
         click.echo("Initializing new profile and sources file.")
@@ -21,6 +22,10 @@ def main(init, profile, sources):
 
     if profile is None:
         click.echo('Oops, did you specify the --profile parameter?')
+        return
+
+    if secrets is None:
+        click.echo('Oops, did you specify the --secrets parameter?')
         return
 
     if sources is None:
@@ -44,7 +49,7 @@ def main(init, profile, sources):
         return
 
     click.echo("Running yogrt...")
-    yogrt_run(profile, sources)
+    yogrt_run(profile, sources, secrets)
     click.echo("Done.")
 
 
