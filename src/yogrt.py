@@ -27,11 +27,14 @@ def yogrt_run(profile_path, sources_path, secrets_path):
     profile_def = yaml.full_load(open(profile_path, "r"))
     sources_def = yaml.full_load(open(sources_path, "r"))
     secrets_def = yaml.full_load(open(secrets_path, "r"))
-    
+
     sources = []
     for source in sources_def:
+        if "is_zip" not in sources_def[source]:
+            sources_def[source]["is_zip"] = False
         if "unzip_filename" not in sources_def[source]:
             sources_def[source]["unzip_filename"] = None
+
         sources.append(Source(geometry_type=sources_def[source]['type'],
                               table_name=sources_def[source]['table_name'],
                               download_url=sources_def[source]['download_url'],
