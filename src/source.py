@@ -14,6 +14,10 @@ def is_aws_s3(url):
     return False
 
 
+def is_local(url):
+    return os.path.exists(url)
+
+
 class Source:
     def __init__(self, geometry_type, table_name, download_url, is_zip=False, unzip_filename=None):
         self.type = geometry_type
@@ -31,6 +35,8 @@ class Source:
             cmd = f"wget {self.download_url} -P {destination_folder} -q"
         elif is_aws_s3(self.download_url):
             cmd = f"aws s3 cp {self.download_url} {destination_folder}"
+        elif is_local(self.download_url):
+            cmd = f"cp {self.download_url} {destination_folder}"
         else:
             raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
 
@@ -39,7 +45,8 @@ class Source:
         self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
 
         if self.is_zip:
-            p = subprocess.Popen(["unzip", self.downloaded_path, "-d", destination_folder])
+            cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
+            p = subprocess.Popen(cmd, shell=True)
             p.wait()
             self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
 

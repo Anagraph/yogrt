@@ -14,3 +14,8 @@ three_peaks:
   type: line
   download_url: s3://squamish-data/chief_three_peaks_loop.json
   table_name: three_peaks
+
+test_TQ:
+  type: polygon
+  download_url: /home/zacharydeziel/Downloads/resultat_TQ.geojson
+  table_name: test_TQ
