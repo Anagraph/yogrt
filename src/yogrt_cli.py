@@ -1,57 +1,64 @@
-import click
+import typer
+from rich import print
 import os
 
 from yogrt import yogrt_run, yogrt_init
 
+app = typer.Typer()
 
-@click.command()
-@click.option("--init", is_flag=True, show_default=True, default=False,
-              help="Initialize a new profile and sources file.")
-@click.option('--profile', default=None, help='The path to the profile yogrt profile.')
-@click.option('--sources', default=None, help='The path to the sources file.')
-@click.option('--secrets', default=None, help='The path to the secrets file.')
-def main(init, profile, sources, secrets):
+
+@app.command()
+def init(target_directory: str = typer.Option(None,  help="The path where the YAML files will be initialized.")):
+    """Welcome to yogrt!
+    You can initialize template files used for the run command with:
+    yogrt init --target-directory <your directory>"""
+    print(f"Initializing new profile, sources, and secret file in {target_directory}")
+    yogrt_init(profile_path=os.path.join(target_directory, "profile.yaml"),
+               sources_path=os.path.join(target_directory, "sources.yaml"),
+               secrets_path=os.path.join(target_directory, "secrets.yaml")),
+    return
+
+
+@app.command()
+def run(profile: str = typer.Option(None, help="The path to the profile yogrt profile."),
+        sources: str = typer.Option(None, help="The path to the sources file."),
+        secrets: str = typer.Option(None, help="The path to the secrets file.")):
     """Welcome to yogrt!
     After configuring your YAML profile and source file, you can download and import your sources with:
-    yogrt run --profile profile.yaml --sources sources.yaml --secrets secrets.yaml"""
-
-    if init:
-        click.echo("Initializing new profile and sources file.")
-        yogrt_init()
-        return
+    yogrt run --profile <profile.yaml> --sources <sources.yaml> --secrets <secrets.yaml>"""
 
     if profile is None:
-        click.echo('Oops, did you specify the --profile parameter?')
+        print('Oops, did you specify the --profile parameter?')
         return
 
     if secrets is None:
-        click.echo('Oops, did you specify the --secrets parameter?')
+        print('Oops, did you specify the --secrets parameter?')
         return
 
     if sources is None:
-        click.echo('Oops, did you specify the --sources parameter?')
+        print('Oops, did you specify the --sources parameter?')
         return
 
     if not os.path.exists(profile):
-        click.echo('Oops, the profile file does not exist. Did you specify the right filepath?')
+        print('Oops, the profile file does not exist. Did you specify the right filepath?')
         return
 
     if not os.path.exists(sources):
-        click.echo('Oops, the sources file does not exist. Did you specify the right filepath?')
+        print('Oops, the sources file does not exist. Did you specify the right filepath?')
         return
 
     if os.path.splitext(profile)[1] not in ['.yaml', '.yml']:
-        click.echo('Oops, the profile file is not a YAML file. Did you specify the right filepath?')
+        print('Oops, the profile file is not a YAML file. Did you specify the right filepath?')
         return
 
     if os.path.splitext(sources)[1] not in ['.yaml', '.yml']:
-        click.echo('Oops, the sources file is not a YAML file. Did you specify the right filepath?')
+        print('Oops, the sources file is not a YAML file. Did you specify the right filepath?')
         return
 
-    click.echo("Running yogrt...")
+    print("[green] Running yogrt... [/green]")
     yogrt_run(profile, sources, secrets)
-    click.echo("Done.")
+    print("[green] Successfully imported data with yogrt! [/green] ")
 
 
 if __name__ == '__main__':
-    main()
+    app()

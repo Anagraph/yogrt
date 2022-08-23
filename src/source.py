@@ -1,5 +1,6 @@
 import os
 import subprocess
+from rich import print
 
 
 def is_http(url):
