@@ -1,5 +1,22 @@
 import os
 import subprocess
+from rich import print
+
+
+def is_http(url):
+    if url[0:4] == "http":
+        return True
+    return False
+
+
+def is_aws_s3(url):
+    if url[0:5] == "s3://":
+        return True
+    return False
+
+
+def is_local(url):
+    return os.path.exists(url)
 
 
 class Source:
@@ -15,17 +32,27 @@ class Source:
         return f"Source(type={self.type}, table_name={self.table_name}, download_url={self.download_url})"
 
     def download(self, destination_folder, ):
-        p = subprocess.Popen(["wget", self.download_url, "-P", destination_folder, "-q"])
+        if is_http(self.download_url):
+            cmd = f"wget {self.download_url} -P {destination_folder} -q"
+        elif is_aws_s3(self.download_url):
+            cmd = f"aws s3 cp {self.download_url} {destination_folder}"
+        elif is_local(self.download_url):
+            cmd = f"cp {self.download_url} {destination_folder}"
+        else:
+            raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
+
+        p = subprocess.Popen(cmd, shell=True)
         p.wait()
         self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
 
         if self.is_zip:
-            p = subprocess.Popen(["unzip", self.downloaded_path, "-d", destination_folder])
+            cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
+            p = subprocess.Popen(cmd, shell=True)
             p.wait()
             self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
 
-    def import_to_database(self, host, port, database, user, password, schema, target_projection):
-        cmd = f"""ogr2ogr -progress -t_srs "EPSG:{target_projection}" -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nln {self.table_name} {self.downloaded_path} -overwrite"""
+    def import_to_database(self, host, port, database, user, password, schema, geom_type, target_projection):
+        cmd = f"""ogr2ogr -progress -t_srs "EPSG:{target_projection}" -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nlt {geom_type} -nln {self.table_name} {self.downloaded_path} -overwrite"""
         print(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
