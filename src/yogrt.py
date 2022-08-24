@@ -42,6 +42,7 @@ def yogrt_run(profile_path, sources_path, secrets_path):
                               unzip_filename=sources_def[source]['unzip_filename']))
 
     for source in sources:
+        print(source.type)
         source.download(destination_folder=profile_def['default']['destination_folder'])
         source.import_to_database(host=secrets_def['default']['host'],
                                   port=secrets_def['default']['port'],
@@ -49,4 +50,5 @@ def yogrt_run(profile_path, sources_path, secrets_path):
                                   user=secrets_def['default']['user'],
                                   password=secrets_def['default']['password'],
                                   schema=secrets_def['default']['schema'],
+                                  geom_type=source.type,
                                   target_projection=profile_def['default']['target_projection'])
