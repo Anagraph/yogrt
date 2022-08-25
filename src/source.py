@@ -47,9 +47,10 @@ class Source:
             p.wait()
 
         if self.is_zip:
-            cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
-            p = subprocess.Popen(cmd, shell=True)
-            p.wait()
+            if force_download or not os.path.join(destination_folder, os.path.basename(self.unzip_filename)):
+                cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
+                p = subprocess.Popen(cmd, shell=True)
+                p.wait()
             self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
 
     def import_to_database(self, host, port, database, user, password, schema, geom_type, target_projection):
