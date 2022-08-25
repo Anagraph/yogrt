@@ -33,20 +33,18 @@ class Source:
 
     def download(self, destination_folder, force_download=False):
         self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
-        if not force_download and os.path.exists(self.downloaded_path):
-            return
+        if force_download or not os.path.exists(self.downloaded_path):
+            if is_http(self.download_url):
+                cmd = f"wget {self.download_url} -P {destination_folder} -q"
+            elif is_aws_s3(self.download_url):
+                cmd = f"aws s3 cp {self.download_url} {destination_folder}"
+            elif is_local(self.download_url):
+                cmd = f"cp {self.download_url} {destination_folder}"
+            else:
+                raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
 
-        if is_http(self.download_url):
-            cmd = f"wget {self.download_url} -P {destination_folder} -q"
-        elif is_aws_s3(self.download_url):
-            cmd = f"aws s3 cp {self.download_url} {destination_folder}"
-        elif is_local(self.download_url):
-            cmd = f"cp {self.download_url} {destination_folder}"
-        else:
-            raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
-
-        p = subprocess.Popen(cmd, shell=True)
-        p.wait()
+            p = subprocess.Popen(cmd, shell=True)
+            p.wait()
 
         if self.is_zip:
             cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
