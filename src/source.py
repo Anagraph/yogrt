@@ -31,7 +31,11 @@ class Source:
     def __repr__(self):
         return f"Source(type={self.type}, table_name={self.table_name}, download_url={self.download_url})"
 
-    def download(self, destination_folder, ):
+    def download(self, destination_folder, force_download=False):
+        self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
+        if not force_download and os.path.exists(self.downloaded_path):
+            return
+
         if is_http(self.download_url):
             cmd = f"wget {self.download_url} -P {destination_folder} -q"
         elif is_aws_s3(self.download_url):
@@ -43,7 +47,6 @@ class Source:
 
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
-        self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
 
         if self.is_zip:
             cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"

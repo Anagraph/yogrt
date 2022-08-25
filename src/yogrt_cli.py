@@ -22,7 +22,8 @@ def init(target_directory: str = typer.Option(None, help="The path where the YAM
 @app.command()
 def run(profile: str = typer.Option(None, help="The path to the profile yogrt profile."),
         sources: str = typer.Option(None, help="The path to the sources file."),
-        secrets: str = typer.Option(None, help="The path to the secrets file.")):
+        secrets: str = typer.Option(None, help="The path to the secrets file."),
+        force_download: bool = typer.Option(False, help="Force download of the sources if already present.")):
     """Welcome to yogrt!
     After configuring your YAML profile and source file, you can download and import your sources with:
     yogrt run --profile <profile.yaml> --sources <sources.yaml> --secrets <secrets.yaml>"""
@@ -56,7 +57,7 @@ def run(profile: str = typer.Option(None, help="The path to the profile yogrt pr
         return
 
     print("[green] Running yogrt... [/green]")
-    yogrt_run(profile, sources, secrets)
+    yogrt_run(profile, sources, secrets, force_download)
     print("[green] Successfully imported data with yogrt! [/green] ")
 
 

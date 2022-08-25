@@ -16,6 +16,6 @@ three_peaks:
   table_name: three_peaks
 
 test_TQ:
-  type: polygon
+  type: point
   download_url: /home/zacharydeziel/Downloads/resultat_TQ.geojson
   table_name: test_TQ
