@@ -1,0 +1,6 @@
+click
+pyyaml
+pytest
+typer
+rich
+shellingham

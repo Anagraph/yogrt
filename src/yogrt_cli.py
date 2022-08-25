@@ -2,13 +2,13 @@ import typer
 from rich import print
 import os
 
-from yogrt import yogrt_run, yogrt_init
+from src.yogrt import yogrt_run, yogrt_init
 
 app = typer.Typer()
 
 
 @app.command()
-def init(target_directory: str = typer.Option(None,  help="The path where the YAML files will be initialized.")):
+def init(target_directory: str = typer.Option(None, help="The path where the YAML files will be initialized.")):
     """Welcome to yogrt!
     You can initialize template files used for the run command with:
     yogrt init --target-directory <your directory>"""
@@ -58,6 +58,10 @@ def run(profile: str = typer.Option(None, help="The path to the profile yogrt pr
     print("[green] Running yogrt... [/green]")
     yogrt_run(profile, sources, secrets)
     print("[green] Successfully imported data with yogrt! [/green] ")
+
+
+def main():
+    app()
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import yaml
 
-from source import Source
+from src.source import Source
 
 
 def write_template(template_path, destination_path):
