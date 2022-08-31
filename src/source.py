@@ -54,7 +54,7 @@ class Source:
             self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
 
     def import_to_database(self, host, port, database, user, password, schema, geom_type, target_projection):
-        cmd = f"""ogr2ogr -progress -t_srs "EPSG:{target_projection}" -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nlt {geom_type} -nln {self.table_name} {self.downloaded_path} -overwrite"""
+        cmd = f"""ogr2ogr -progress -t_srs "EPSG:{target_projection}" -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nlt PROMOTE_TO_MULTI -nln {self.table_name} {self.downloaded_path} -overwrite"""
         print(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
