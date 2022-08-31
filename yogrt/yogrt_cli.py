@@ -2,7 +2,7 @@ import typer
 from rich import print
 import os
 
-from yogrt import yogrt_run, yogrt_init
+from yogrt.yogrt import yogrt_run, yogrt_init
 
 app = typer.Typer()
 

@@ -1,7 +1,7 @@
 import yaml
 import os
 
-from source import Source
+from yogrt.source import Source
 
 
 def write_template(template_path, destination_path):
