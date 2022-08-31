@@ -31,17 +31,15 @@ class Source:
     def __repr__(self):
         return f"Source(type={self.type}, table_name={self.table_name}, download_url={self.download_url})"
 
-    def download(self, destination_folder, force_download=False):
-        self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
-        if force_download or not os.path.exists(self.downloaded_path):
-            if is_http(self.download_url):
-                cmd = f"wget {self.download_url} -P {destination_folder} -q"
-            elif is_aws_s3(self.download_url):
-                cmd = f"aws s3 cp {self.download_url} {destination_folder}"
-            elif is_local(self.download_url):
-                cmd = f"cp {self.download_url} {destination_folder}"
-            else:
-                raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
+    def download(self, destination_folder, aws_access_key_id=None, aws_secret_access_key=None):
+        if is_http(self.download_url):
+            cmd = f"wget {self.download_url} -P {destination_folder} -q"
+        elif is_aws_s3(self.download_url):
+            cmd = f"AWS_ACCESS_KEY_ID={aws_access_key_id} AWS_SECRET_ACCESS_KEY={aws_secret_access_key} aws s3 cp {self.download_url} {destination_folder}"
+        elif is_local(self.download_url):
+            cmd = f"cp {self.download_url} {destination_folder}"
+        else:
+            raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
 
             p = subprocess.Popen(cmd, shell=True)
             p.wait()
