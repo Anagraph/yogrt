@@ -1,6 +1,7 @@
 import yaml
+import os
 
-from src.source import Source
+from yogrt.source import Source
 
 
 def write_template(template_path, destination_path):
@@ -12,10 +13,14 @@ def write_template(template_path, destination_path):
     return
 
 
+def get_template_folder():
+    return os.path.join(os.path.dirname(__file__), 'templates')
+
+
 def yogrt_init(profile_path="./profile.yaml", sources_path="./sources.yaml", secrets_path="./secrets.yaml",
-               profile_template="templates/profile_template.yaml",
-               sources_template="templates/sources_template.yaml",
-               secrets_template="templates/sources_template.yaml"):
+               profile_template=os.path.join(get_template_folder(), "profile_template.yaml"),
+               sources_template=os.path.join(get_template_folder(), "sources_template.yaml"),
+               secrets_template=os.path.join(get_template_folder(), "secrets_template.yaml")):
     write_template(profile_template, profile_path)
     write_template(sources_template, sources_path)
     write_template(secrets_template, secrets_path)

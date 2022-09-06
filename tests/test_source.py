@@ -1,7 +1,7 @@
 import os.path
 import shutil
 
-from src.source import Source
+from yogrt.source import Source
 
 
 def test_source_download_zip():

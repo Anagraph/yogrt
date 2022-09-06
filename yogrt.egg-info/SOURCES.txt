@@ -1,10 +1,11 @@
+MANIFEST.in
 pyproject.toml
 setup.cfg
 setup.py
-src/__init__.py
-src/source.py
-src/yogrt.py
-src/yogrt_cli.py
+yogrt/__init__.py
+yogrt/source.py
+yogrt/yogrt.py
+yogrt/yogrt_cli.py
 yogrt.egg-info/PKG-INFO
 yogrt.egg-info/SOURCES.txt
 yogrt.egg-info/dependency_links.txt
