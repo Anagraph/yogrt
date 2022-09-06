@@ -47,7 +47,8 @@ def yogrt_run(profile_path, sources_path, secrets_path, force_download=False):
                               unzip_filename=sources_def[source]['unzip_filename']))
 
     for source in sources:
-        source.download(destination_folder=profile_def['default']['destination_folder'], force_download=force_download)
+        source.download(destination_folder=profile_def['default']['destination_folder'], force_download=force_download,
+                        aws_access_key_id=secrets_def['default']['s3_access_key_id'], aws_secret_access_key=secrets_def['default']['s3_secret_access_key'])
         source.import_to_database(host=secrets_def['default']['host'],
                                   port=secrets_def['default']['port'],
                                   database=secrets_def['default']['dbname'],
