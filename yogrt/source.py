@@ -58,6 +58,7 @@ class Source(ABC):
 
     def import_to_database(self, host, port, database, user, password, schema, target_projection):
         cmd = f"""ogr2ogr -progress -t_srs "EPSG:{target_projection}" -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nlt PROMOTE_TO_MULTI -nln {self.table_name} {self.downloaded_path} -overwrite"""
+        print(self.__repr__())
         print(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
