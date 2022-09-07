@@ -1,5 +1,7 @@
 import os
 import subprocess
+from abc import ABC
+
 from rich import print
 
 
@@ -19,13 +21,18 @@ def is_local(url):
     return os.path.exists(url)
 
 
-class Source:
-    def __init__(self, geometry_type, table_name, download_url, is_zip=False, unzip_filename=None):
+def get_source(geometry_type, table_name, download_url, is_zip, unzip_filename):
+    if is_zip:
+        return ZipSource(geometry_type, table_name, download_url, unzip_filename)
+    else:
+        return UnzipSource(geometry_type, table_name, download_url)
+
+
+class Source(ABC):
+    def __init__(self, geometry_type, table_name, download_url):
         self.type = geometry_type
         self.table_name = table_name
         self.download_url = download_url
-        self.is_zip = is_zip
-        self.unzip_filename = unzip_filename
         self.downloaded_path = None
 
     def __repr__(self):
@@ -37,15 +44,6 @@ class Source:
         p.wait()
 
         self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
-
-        if self.is_zip:
-            final_unzip = os.path.join(destination_folder, self.unzip_filename)
-            if force_download or not os.path.exists(final_unzip):
-                cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
-                print(cmd)
-                p = subprocess.Popen(cmd, shell=True)
-                p.wait()
-            self.downloaded_path = final_unzip
 
     def get_download_cmd(self, aws_access_key_id, aws_secret_access_key, destination_folder):
         if is_http(self.download_url):
@@ -63,3 +61,24 @@ class Source:
         print(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
+
+
+class UnzipSource(Source):
+    pass
+
+
+class ZipSource(Source):
+    def __init__(self, geometry_type, table_name, download_url, unzip_filename=None):
+        super().__init__(geometry_type, table_name, download_url)
+        self.unzip_filename = unzip_filename
+
+    def download(self, destination_folder, aws_access_key_id=None, aws_secret_access_key=None, force_download=False):
+        super().download(destination_folder, aws_access_key_id, aws_secret_access_key, force_download)
+
+        final_unzip = os.path.join(destination_folder, self.unzip_filename)
+        if force_download or not os.path.exists(final_unzip):
+            cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
+            print(cmd)
+            p = subprocess.Popen(cmd, shell=True)
+            p.wait()
+        self.downloaded_path = final_unzip

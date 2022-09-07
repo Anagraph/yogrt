@@ -1,7 +1,7 @@
 import yaml
 import os
 
-from yogrt.source import Source
+from yogrt.source import get_source
 
 
 def write_template(template_path, destination_path):
@@ -40,11 +40,11 @@ def yogrt_run(profile_path, sources_path, secrets_path, force_download=False):
         if "unzip_filename" not in sources_def[source]:
             sources_def[source]["unzip_filename"] = None
 
-        sources.append(Source(geometry_type=sources_def[source]['type'],
-                              table_name=sources_def[source]['table_name'],
-                              download_url=sources_def[source]['download_url'],
-                              is_zip=sources_def[source]['is_zip'],
-                              unzip_filename=sources_def[source]['unzip_filename']))
+        sources.append(get_source(geometry_type=sources_def[source]['type'],
+                                  table_name=sources_def[source]['table_name'],
+                                  download_url=sources_def[source]['download_url'],
+                                  is_zip=sources_def[source]['is_zip'],
+                                  unzip_filename=sources_def[source]['unzip_filename']))
 
     for source in sources:
         # the only parameter that can be excluded from the profile.yaml is the aws s3 credentials
