@@ -33,7 +33,7 @@ class Source:
 
     def download(self, destination_folder, aws_access_key_id=None, aws_secret_access_key=None, force_download=False):
         cmd = self.get_download_cmd(aws_access_key_id, aws_secret_access_key, destination_folder)
-
+        print(self.downloaded_path)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
 
@@ -55,7 +55,7 @@ class Source:
             raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
         return cmd
 
-    def import_to_database(self, host, port, database, user, password, schema, geom_type, target_projection):
+    def import_to_database(self, host, port, database, user, password, schema, target_projection):
         cmd = f"""ogr2ogr -progress -t_srs "EPSG:{target_projection}" -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nlt PROMOTE_TO_MULTI -nln {self.table_name} {self.downloaded_path} -overwrite"""
         print(cmd)
         p = subprocess.Popen(cmd, shell=True)
