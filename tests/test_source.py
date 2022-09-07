@@ -31,3 +31,17 @@ def test_source_import_to_db():
     source.import_to_database("localhost", "3434", "postgres", "postgres", "bidone", "public")
     shutil.rmtree('./test_tmp')
     os.mkdir('./test_tmp')
+
+
+def test_get_download_cmd_aws():
+    source = Source(geometry_type="polygon", table_name="ldc",
+                    download_url="s3://countries.geojson")
+    cmd = source.get_download_cmd("aws_access_key_id", "aws_secret_access_key", "./test_tmp")
+    assert cmd == "AWS_ACCESS_KEY_ID=aws_access_key_id AWS_SECRET_ACCESS_KEY=aws_secret_access_key aws s3 cp s3://countries.geojson ./test_tmp"
+
+
+def test_get_download_cmd_https():
+    source = Source(geometry_type="polygon", table_name="ldc",
+                    download_url="https://datahub.io/core/geo-countries/r/countries.geojson")
+    cmd = source.get_download_cmd("aws_access_key_id", "aws_secret_access_key", "./test_tmp")
+    assert cmd == "wget https://datahub.io/core/geo-countries/r/countries.geojson -P ./test_tmp -q"

@@ -31,7 +31,20 @@ class Source:
     def __repr__(self):
         return f"Source(type={self.type}, table_name={self.table_name}, download_url={self.download_url})"
 
-    def download(self, destination_folder, aws_access_key_id=None, aws_secret_access_key=None):
+    def download(self, destination_folder, aws_access_key_id=None, aws_secret_access_key=None, force_download=False):
+        cmd = self.get_download_cmd(aws_access_key_id, aws_secret_access_key, destination_folder)
+
+        p = subprocess.Popen(cmd, shell=True)
+        p.wait()
+
+        if self.is_zip:
+            if force_download or not os.path.join(destination_folder, os.path.basename(self.unzip_filename)):
+                cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
+                p = subprocess.Popen(cmd, shell=True)
+                p.wait()
+            self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
+
+    def get_download_cmd(self, aws_access_key_id, aws_secret_access_key, destination_folder):
         if is_http(self.download_url):
             cmd = f"wget {self.download_url} -P {destination_folder} -q"
         elif is_aws_s3(self.download_url):
@@ -40,16 +53,7 @@ class Source:
             cmd = f"cp {self.download_url} {destination_folder}"
         else:
             raise ValueError(f"Did you provide a valid http or s3 url for the source: {self.table_name}?")
-
-            p = subprocess.Popen(cmd, shell=True)
-            p.wait()
-
-        if self.is_zip:
-            if force_download or not os.path.join(destination_folder, os.path.basename(self.unzip_filename)):
-                cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
-                p = subprocess.Popen(cmd, shell=True)
-                p.wait()
-            self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
+        return cmd
 
     def import_to_database(self, host, port, database, user, password, schema, geom_type, target_projection):
         cmd = f"""ogr2ogr -progress -t_srs "EPSG:{target_projection}" -f "PostgreSQL" PG:"host='{host}' port='{port}' dbname='{database}' user='{user}' password='{password}'" -lco SCHEMA={schema} -nlt PROMOTE_TO_MULTI -nln {self.table_name} {self.downloaded_path} -overwrite"""
