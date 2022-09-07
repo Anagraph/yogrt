@@ -33,16 +33,19 @@ class Source:
 
     def download(self, destination_folder, aws_access_key_id=None, aws_secret_access_key=None, force_download=False):
         cmd = self.get_download_cmd(aws_access_key_id, aws_secret_access_key, destination_folder)
-        print(self.downloaded_path)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
 
+        self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.download_url))
+
         if self.is_zip:
-            if force_download or not os.path.join(destination_folder, os.path.basename(self.unzip_filename)):
+            final_unzip = os.path.join(destination_folder, self.unzip_filename)
+            if force_download or not os.path.exists(final_unzip):
                 cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
+                print(cmd)
                 p = subprocess.Popen(cmd, shell=True)
                 p.wait()
-            self.downloaded_path = os.path.join(destination_folder, os.path.basename(self.unzip_filename))
+            self.downloaded_path = final_unzip
 
     def get_download_cmd(self, aws_access_key_id, aws_secret_access_key, destination_folder):
         if is_http(self.download_url):
