@@ -45,7 +45,6 @@ def yogrt_run(profile_path, sources_path, secrets_path, force_download=False):
                             download_url=sources_def[source]['download_url'],
                             is_zip=sources_def[source]['is_zip'],
                             unzip_filename=sources_def[source]['unzip_filename'])
-        print(source)
         sources.append(source)
 
     for source in sources:
@@ -71,4 +70,4 @@ def yogrt_run(profile_path, sources_path, secrets_path, force_download=False):
                                   schema=secrets_def['default']['schema'],
                                   target_projection=profile_def['default']['target_projection'])
 
-        return
+    return
