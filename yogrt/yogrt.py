@@ -1,7 +1,7 @@
 import yaml
 import os
 
-from yogrt.source import Source
+from yogrt.source import get_source
 
 
 def write_template(template_path, destination_path):
@@ -40,20 +40,34 @@ def yogrt_run(profile_path, sources_path, secrets_path, force_download=False):
         if "unzip_filename" not in sources_def[source]:
             sources_def[source]["unzip_filename"] = None
 
-        sources.append(Source(geometry_type=sources_def[source]['type'],
-                              table_name=sources_def[source]['table_name'],
-                              download_url=sources_def[source]['download_url'],
-                              is_zip=sources_def[source]['is_zip'],
-                              unzip_filename=sources_def[source]['unzip_filename']))
+        source = get_source(geometry_type=sources_def[source]['type'],
+                            table_name=sources_def[source]['table_name'],
+                            download_url=sources_def[source]['download_url'],
+                            is_zip=sources_def[source]['is_zip'],
+                            unzip_filename=sources_def[source]['unzip_filename'])
+        sources.append(source)
 
     for source in sources:
+        # the only parameter that can be excluded from the profile.yaml is the aws s3 credentials
+        # same decision should be made for other vendors
+        if 's3_access_key_id' in secrets_def['default']:
+            s3_access_key = secrets_def['default']['s3_access_key_id']
+        else:
+            s3_access_key = None
+        if 's3_secret_access_key' in secrets_def['default']:
+            s3_secret = secrets_def['default']['s3_secret_access_key']
+        else:
+            s3_secret = None
+
         source.download(destination_folder=profile_def['default']['destination_folder'], force_download=force_download,
-                        aws_access_key_id=secrets_def['default']['s3_access_key_id'], aws_secret_access_key=secrets_def['default']['s3_secret_access_key'])
+                        aws_access_key_id=s3_access_key,
+                        aws_secret_access_key=s3_secret)
         source.import_to_database(host=secrets_def['default']['host'],
                                   port=secrets_def['default']['port'],
                                   database=secrets_def['default']['dbname'],
                                   user=secrets_def['default']['user'],
                                   password=secrets_def['default']['password'],
                                   schema=secrets_def['default']['schema'],
-                                  geom_type=source.type,
                                   target_projection=profile_def['default']['target_projection'])
+
+    return
