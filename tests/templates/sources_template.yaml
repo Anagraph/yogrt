@@ -1,0 +1,16 @@
+countries:
+  type: polygon
+  download_url: https://datahub.io/core/geo-countries/r/countries.geojson
+  table_name: countries
+
+ldc:
+  type: polygon
+  download_url: https://www.oeb.ca/documents/opendata/open-data-electricity-map-20220131.zip
+  table_name: ldc
+  is_zip: true
+  unzip_filename: "Electric_220131.kmz"
+
+three_peaks:
+  type: line
+  download_url: s3://squamish-data/chief_three_peaks_loop.json
+  table_name: three_peaks

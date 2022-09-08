@@ -1,0 +1,3 @@
+default:
+  destination_folder: ./tmp
+  target_projection: 3857
