@@ -7,7 +7,7 @@ from yogrt.yogrt import yogrt_run, yogrt_init
 app = typer.Typer()
 
 
-@app.command()
+@app.command(name="init")
 def init(target_directory: str = typer.Option(None, help="The path where the YAML files will be initialized.")):
     """Welcome to yogrt!
     You can initialize template files used for the run command with:
@@ -19,7 +19,7 @@ def init(target_directory: str = typer.Option(None, help="The path where the YAM
     return
 
 
-@app.command()
+@app.command(name="run")
 def run(profile: str = typer.Option(None, help="The path to the profile yogrt profile."),
         sources: str = typer.Option(None, help="The path to the sources file."),
         secrets: str = typer.Option(None, help="The path to the secrets file."),
