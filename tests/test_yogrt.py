@@ -29,7 +29,7 @@ def test_yogrt_run():
               "templates/secrets_template.yaml")
 
 
-def test_yogrt_run():
+def test_yogrt_run_aws():
     yogrt_run("templates/profile_template.yaml", "templates/aws_sources_template.yaml",
               "/home/zacharydeziel/Documents/yogrt/yogrt/templates/test_secrets.yaml")
 

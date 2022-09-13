@@ -1,7 +1,7 @@
 import os
 import shutil
 import subprocess
-import logging
+import zipfile
 from abc import ABC
 from urllib.parse import urlparse
 
@@ -54,6 +54,19 @@ def aws_download_file(destination, file_name, bucket, aws_access_key_id, aws_sec
         raise ValueError("AWS S3 download failed: {}".format(e))
 
 
+def unzip_file(zip_path, destination_filename, destination_folder):
+    zip_data = zipfile.ZipFile(zip_path)
+    zip_infos = zip_data.infolist()
+
+    if len(zip_infos) > 1:
+        raise ValueError("Zip file contains more than one file")
+
+    zip_infos[0].filename = destination_filename
+    zip_data.extract(zip_infos[0])
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(destination_folder)
+
+
 class Source(ABC):
     def __init__(self, geometry_type, table_name, download_url):
         self.type = geometry_type
@@ -103,8 +116,6 @@ class ZipSource(Source):
 
         final_unzip = os.path.join(destination_folder, self.unzip_filename)
         if force_download or not os.path.exists(final_unzip):
-            cmd = f"unzip -o {self.downloaded_path} -d {destination_folder}"
-            print(cmd)
-            p = subprocess.Popen(cmd, shell=True)
-            p.wait()
+            unzip_file(self.downloaded_path, self.unzip_filename, destination_folder)
+
         self.downloaded_path = final_unzip
