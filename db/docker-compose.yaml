@@ -2,7 +2,7 @@ version: "3.7"
 services:
   db:
     build:
-      context: ..
+      context: .
       dockerfile: db.dockerfile
     restart: always
     environment:

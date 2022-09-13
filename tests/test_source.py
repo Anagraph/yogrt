@@ -1,9 +1,9 @@
 import os.path
 import shutil
 
-import pytest
+import yaml
 
-from yogrt.source import ZipSource, UnzipSource, is_local, is_aws_s3, is_http
+from yogrt.source import ZipSource, UnzipSource, is_local, is_aws_s3, is_http, aws_download_file
 
 
 def test_source_download_zip():
@@ -17,10 +17,11 @@ def test_source_download_zip():
 
 
 def test_source_download_not_zip():
-    source = UnzipSource(geometry_type="polygon", table_name="ldc",
+    source = UnzipSource(geometry_type="polygon", table_name="countries_1",
                          download_url="https://datahub.io/core/geo-countries/r/countries.geojson")
     source.download("./test_tmp")
-    assert os.path.exists("./test_tmp/countries.geojson")
+    # table named is used to name the downloaded file now
+    assert os.path.exists("./test_tmp/countries_1.geojson")
     shutil.rmtree('./test_tmp')
     os.mkdir('./test_tmp')
 
@@ -33,34 +34,6 @@ def test_source_import_to_db():
     source.import_to_database("localhost", "3434", "postgres", "postgres", "bidone", "public", "4326")
     shutil.rmtree('./test_tmp')
     os.mkdir('./test_tmp')
-
-
-def test_get_download_cmd_aws():
-    source = UnzipSource(geometry_type="polygon", table_name="ldc",
-                         download_url="s3://countries.geojson")
-    cmd = source.get_download_cmd("aws_access_key_id", "aws_secret_access_key", "./test_tmp")
-    assert cmd == "AWS_ACCESS_KEY_ID=aws_access_key_id AWS_SECRET_ACCESS_KEY=aws_secret_access_key aws s3 cp s3://countries.geojson ./test_tmp"
-
-
-def test_get_download_cmd_https():
-    source = UnzipSource(geometry_type="polygon", table_name="ldc",
-                    download_url="https://datahub.io/core/geo-countries/r/countries.geojson")
-    cmd = source.get_download_cmd("aws_access_key_id", "aws_secret_access_key", "./test_tmp")
-    assert cmd == "wget https://datahub.io/core/geo-countries/r/countries.geojson -P ./test_tmp -q"
-
-
-def test_get_download_cmd_local():
-    source = UnzipSource(geometry_type="polygon", table_name="ldc", download_url="countries.geojson")
-    open("countries.geojson", "w").close()
-    cmd = source.get_download_cmd("aws_access_key_id", "aws_secret_access_key", "./test_tmp")
-    assert cmd == "cp countries.geojson ./test_tmp"
-    os.remove("countries.geojson")
-
-
-def test_get_download_cmd_value_error():
-    source = UnzipSource(geometry_type="polygon", table_name="ldc", download_url="countries.geojson")
-    with pytest.raises(ValueError):
-        source.get_download_cmd("aws_access_key_id", "aws_secret_access_key", "./test_tmp")
 
 
 def test_is_aws_s3():
@@ -84,3 +57,11 @@ def test_is_http():
 def test_repr():
     source = UnzipSource(geometry_type="polygon", table_name="ldc", download_url="countries.geojson")
     assert source.__repr__() == f"Source(type=polygon, table_name=ldc, download_url=countries.geojson)"
+
+
+def test_aws_download_file():
+    secrets_def = yaml.full_load(open("/home/zacharydeziel/Documents/yogrt/yogrt/templates/test_secrets.yaml", "r"))
+    aws_download_file(destination="./test_tmp/chief_three_peaks_loop.geojson", file_name="chief_three_peaks_loop.json",
+                      bucket="squamish-data", aws_secret_access_key=secrets_def["default"]["s3_secret_access_key"],
+                      aws_access_key_id=secrets_def["default"]["s3_access_key_id"])
+    assert os.path.exists("./test_tmp/chief_three_peaks_loop.geojson")

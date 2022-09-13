@@ -1,0 +1,4 @@
+three_peaks:
+  type: line
+  download_url: s3://squamish-data/chief_three_peaks_loop.json
+  table_name: three_peaks
