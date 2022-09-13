@@ -5,3 +5,4 @@ typer
 rich
 shellingham
 coverage
+boto3
