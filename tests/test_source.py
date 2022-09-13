@@ -2,6 +2,7 @@ import os.path
 import shutil
 
 import yaml
+import pytest
 
 from yogrt.source import ZipSource, UnzipSource, is_local, is_aws_s3, is_http, aws_download_file
 
@@ -65,3 +66,25 @@ def test_aws_download_file():
                       bucket="squamish-data", aws_secret_access_key=secrets_def["default"]["s3_secret_access_key"],
                       aws_access_key_id=secrets_def["default"]["s3_access_key_id"])
     assert os.path.exists("./test_tmp/chief_three_peaks_loop.geojson")
+
+
+def test_download_local():
+    source = UnzipSource(geometry_type="polygon", table_name="ldc", download_url="./test_tmp/countries.geojson")
+    open("./test_tmp/countries.geojson", "w").close()
+    source.download("./test_tmp")
+    assert os.path.exists("./test_tmp/countries.geojson")
+    shutil.rmtree('./test_tmp')
+    os.mkdir('./test_tmp')
+
+
+def test_download_value_error():
+    with pytest.raises(ValueError):
+        source = UnzipSource(geometry_type="polygon", table_name="ldc", download_url="s3:/notvalid")
+        source.download("./test_tmp")
+
+
+def test_aws_download_file_value_error():
+    with pytest.raises(ValueError):
+        aws_download_file(destination="./test_tmp/chief_three_peaks_loop.geojson",
+                          file_name="chief_three_peaks_loop.json", aws_secret_access_key="notvalid",
+                          aws_access_key_id="notvalid", bucket="squamish-data")

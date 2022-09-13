@@ -39,13 +39,9 @@ def http_download_file(url, destination_path):
     with open(destination_path, "wb+") as f:
         f.write(r.content)
 
-    return True
-
 
 def copy_local_file(source_path, destination_path):
     shutil.copy(source_path, destination_path)
-
-    return True
 
 
 def aws_download_file(destination, file_name, bucket, aws_access_key_id, aws_secret_access_key):
@@ -78,7 +74,7 @@ class Source(ABC):
         elif is_aws_s3(self.download_url):
             p = urlparse(self.download_url, allow_fragments=False)
             bucket = p.netloc
-            file_path = p.path[1:] # contains '/' if not indexing from [1:]
+            file_path = p.path[1:]  # contains '/' if not indexing from [1:]
             aws_download_file(self.downloaded_path, file_path, bucket, aws_access_key_id, aws_secret_access_key)
         elif is_local(self.download_url):
             copy_local_file(self.download_url, self.downloaded_path)
