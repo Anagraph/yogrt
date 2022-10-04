@@ -2,6 +2,7 @@ import os.path
 import shutil
 
 import pytest
+import yaml
 
 from yogrt.source import ZipSource, UnzipSource, is_local, is_aws_s3, is_http
 
@@ -44,7 +45,7 @@ def test_get_download_cmd_aws():
 
 def test_get_download_cmd_https():
     source = UnzipSource(geometry_type="polygon", table_name="ldc",
-                    download_url="https://datahub.io/core/geo-countries/r/countries.geojson")
+                         download_url="https://datahub.io/core/geo-countries/r/countries.geojson")
     cmd = source.get_download_cmd("aws_access_key_id", "aws_secret_access_key", "./test_tmp")
     assert cmd == "wget https://datahub.io/core/geo-countries/r/countries.geojson -P ./test_tmp -q"
 
@@ -84,3 +85,10 @@ def test_is_http():
 def test_repr():
     source = UnzipSource(geometry_type="polygon", table_name="ldc", download_url="countries.geojson")
     assert source.__repr__() == f"Source(type=polygon, table_name=ldc, download_url=countries.geojson)"
+
+
+def test_shp_s3_source():
+    source = ZipSource(geometry_type="polygon", table_name="countries",
+                       download_url="s3://anagraph-public-bucket/countries.zip", unzip_filename="countries.shp")
+    source.download("./test_tmp", os.environ["AWS_S3_ACCESS_KEY_ID"], os.environ["AWS_S3_SECRET_ACCESS_KEY"])
+    print(source.downloaded_path)
