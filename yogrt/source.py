@@ -54,11 +54,26 @@ def aws_download_file(destination, file_name, bucket, aws_access_key_id, aws_sec
         raise ValueError("AWS S3 download failed: {}".format(e))
 
 
+def is_shp_zip(zip_path):
+    zip_data = zipfile.ZipFile(zip_path)
+    zip_infos = zip_data.infolist()
+
+    num_shp = 0
+    for f in zip_infos:
+        if f.filename.split('.')[-1] == 'shp':
+            num_shp += 1
+
+    if num_shp != 1:
+        return False
+
+    return True
+
+
 def unzip_file(zip_path, destination_filename, destination_folder):
     zip_data = zipfile.ZipFile(zip_path)
     zip_infos = zip_data.infolist()
 
-    if len(zip_infos) > 1:
+    if len(zip_infos) > 1 and not is_shp_zip(zip_path):
         raise ValueError("Zip file contains more than one file")
 
     zip_infos[0].filename = destination_filename
