@@ -4,7 +4,7 @@ import shutil
 import yaml
 import pytest
 
-from yogrt.source import ZipSource, UnzipSource, is_local, is_aws_s3, is_http, aws_download_file
+from yogrt.source import ZipSource, UnzipSource, is_local, is_aws_s3, is_http, aws_download_file, is_shp_zip
 
 
 def test_source_download_zip():
@@ -88,3 +88,22 @@ def test_aws_download_file_value_error():
         aws_download_file(destination="./test_tmp/chief_three_peaks_loop.geojson",
                           file_name="chief_three_peaks_loop.json", aws_secret_access_key="notvalid",
                           aws_access_key_id="notvalid", bucket="squamish-data")
+
+
+def test_is_shp_zip_single_shp():
+    os.mkdir("./test_tmp/single_shp")
+    open("./test_tmp/single_shp/single_shp.shp", "w").close()
+    shutil.make_archive('./test_tmp/single_shp', 'zip', "./test_tmp/single_shp")
+    assert is_shp_zip("./test_tmp/single_shp.zip")
+    shutil.rmtree('./test_tmp/single_shp')
+    os.remove('./test_tmp/single_shp.zip')
+
+
+def test_is_shp_zip_two_shp():
+    os.mkdir("./test_tmp/two_shp")
+    open("./test_tmp/two_shp/single_shp.shp", "w+").close()
+    open("./test_tmp/two_shp/second_shp.shp", "w+").close()
+    shutil.make_archive('./test_tmp/two_shp', 'zip', "./test_tmp/two_shp")
+    assert not is_shp_zip("./test_tmp/two_shp.zip")
+    shutil.rmtree('./test_tmp/two_shp')
+    os.remove('./test_tmp/two_shp.zip')
